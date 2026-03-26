@@ -3,6 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Leaf, Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
+import ThemeToggle from '../ThemeToggle';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -12,6 +13,7 @@ const Navbar = () => {
     { name: 'Explore', path: '/explore' },
     { name: 'Leaderboard', path: '/leaderboard' },
     { name: 'Guilds', path: '/guilds' },
+    { name: 'AI Assistant', path: '/ai-chat' },
   ];
 
   return (
@@ -43,8 +45,9 @@ const Navbar = () => {
                 </Link>
               ))}
             </div>
-            <div className="flex items-center gap-4 border-l pl-6 border-gray-200">
-              <Link to="/login" className="text-sm font-medium text-gray-600 hover:text-ts-green transition-colors">
+            <div className="flex items-center gap-4 border-l pl-6 border-gray-200 dark:border-gray-700">
+              <ThemeToggle />
+              <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-ts-green transition-colors">
                 Log in
               </Link>
               <Link to="/register">
@@ -56,10 +59,11 @@ const Navbar = () => {
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center gap-2">
+            <ThemeToggle />
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-gray-600 hover:text-ts-green focus:outline-none"
+              className="text-gray-600 hover:text-ts-green focus:outline-none dark:text-gray-300"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>

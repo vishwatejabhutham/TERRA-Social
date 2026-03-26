@@ -1,17 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { TreePine, Info } from 'lucide-react';
 import Card from '../components/ui/Card';
+import axiosInstance from '../api/axiosInstance';
+import { API } from '../api/endpoints';
+
+const defaultMarkers = [
+  { id: 1, top: '40%', left: '20%', label: 'Amazon Reforestation' },
+  { id: 2, top: '35%', left: '50%', label: 'European Green Belt' },
+  { id: 3, top: '60%', left: '80%', label: 'Indonesian Mangroves' },
+  { id: 4, top: '25%', left: '25%', label: 'Canadian Boreal' },
+  { id: 5, top: '65%', left: '60%', label: 'Madagascar Corridors' },
+];
 
 const MapPage = () => {
-  // Dummy tree markers for visualization (percentages for absolute positioning over map image)
-  const markers = [
-    { id: 1, top: '40%', left: '20%', label: 'Amazon Reforestation' },
-    { id: 2, top: '35%', left: '50%', label: 'European Green Belt' },
-    { id: 3, top: '60%', left: '80%', label: 'Indonesian Mangroves' },
-    { id: 4, top: '25%', left: '25%', label: 'Canadian Boreal' },
-    { id: 5, top: '65%', left: '60%', label: 'Madagascar Corridors' },
-  ];
+  const [markers, setMarkers] = useState(defaultMarkers);
+  const [totalTrees, setTotalTrees] = useState(4520391);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchTrees = async () => {
+      try {
+        const response = await axiosInstance.get(API.getTrees);
+        if (response.data?.data) {
+          setMarkers(response.data.data);
+        }
+        if (response.data?.totalTrees) {
+          setTotalTrees(response.data.totalTrees);
+        }
+      } catch (error) {
+        console.warn("Failed to fetch trees data, falling back to mock map markers:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTrees();
+  }, []);
 
   return (
     <div className="h-[calc(100vh-140px)] flex flex-col">
@@ -29,7 +54,7 @@ const MapPage = () => {
         </div>
       </div>
 
-      <Card className="flex-1 overflow-hidden relative p-0 border-4 border-white/50 shadow-2xl bg-slate-100">
+      <Card className="flex-1 overflow-hidden relative p-0 border-4 border-emerald-100/50 shadow-2xl bg-gradient-to-br from-teal-50 to-emerald-100">
         <div className="absolute inset-0 z-0">
           <img 
             src="https://images.unsplash.com/photo-1524661135-423995f22d0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" 
@@ -70,11 +95,11 @@ const MapPage = () => {
 
         {/* Bottom Left Info Panel */}
         <div className="absolute bottom-6 left-6 z-20 w-80">
-          <Card className="bg-white/80 backdrop-blur-xl border border-white/60 p-5 p-4 shadow-2xl">
+          <Card className="bg-gradient-to-br from-white/95 to-emerald-50/95 backdrop-blur-xl border border-emerald-200/60 p-5 shadow-2xl shadow-emerald-900/10">
             <h3 className="font-bold text-ts-forest flex items-center gap-2 mb-2">
               <Info size={18} className="text-ts-green" /> Total Reforestation
             </h3>
-            <p className="text-xl font-extrabold text-ts-green tracking-tight">4,520,391 Trees</p>
+            <p className="text-xl font-extrabold text-ts-green tracking-tight">{totalTrees.toLocaleString()} Trees</p>
             <p className="text-xs text-gray-500 mt-1">Pending Leaflet/Google Maps API integration for dynamic clusters mapping.</p>
           </Card>
         </div>

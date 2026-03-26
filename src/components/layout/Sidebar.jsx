@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, TreePine, Users, Map as MapIcon, UserCircle, Trophy } from 'lucide-react';
+import { LayoutDashboard, TreePine, Users, Map as MapIcon, UserCircle, Trophy, Bot } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const Sidebar = () => {
@@ -10,6 +10,7 @@ const Sidebar = () => {
     { name: 'Guilds', icon: <Users size={20} />, path: '/guilds' },
     { name: 'Live Map', icon: <MapIcon size={20} />, path: '/map' },
     { name: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
+    { name: 'AI Assistant', icon: <Bot size={20} />, path: '/ai-chat' },
     { name: 'Profile', icon: <UserCircle size={20} />, path: '/profile' },
   ];
 
@@ -26,10 +27,10 @@ const Sidebar = () => {
               <NavLink
                 to={item.path}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                  `flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 ${
                     isActive
-                      ? 'bg-ts-green text-white shadow-md shadow-ts-green/20'
-                      : 'text-gray-600 hover:bg-white/50 hover:text-ts-forest'
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30 font-bold translate-x-1'
+                      : 'text-gray-600 hover:bg-emerald-50 hover:text-emerald-700 font-medium'
                   }`
                 }
               >

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Users, Globe, Target } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
+import axiosInstance from '../api/axiosInstance';
+import { API } from '../api/endpoints';
 
 const initialGuilds = [
   { id: 1, name: 'Eco Warriors LA', members: 1240, target: 'Plant 10k Trees by 2027', joined: false, image: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=400&h=200' },
@@ -15,9 +17,36 @@ const initialGuilds = [
 
 const Guilds = () => {
   const [guilds, setGuilds] = useState(initialGuilds);
+  const [loading, setLoading] = useState(true);
 
-  const toggleJoin = (id) => {
+  useEffect(() => {
+    const fetchGuilds = async () => {
+      try {
+        const response = await axiosInstance.get(API.getGuilds);
+        if (response.data?.data) {
+          setGuilds(response.data.data);
+        }
+      } catch (error) {
+        console.warn("Failed to fetch guilds, falling back to mock data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGuilds();
+  }, []);
+
+  const toggleJoin = async (id) => {
+    // Optimistic update
     setGuilds(guilds.map(g => g.id === id ? { ...g, joined: !g.joined } : g));
+    
+    try {
+      const joinEndpoint = API.joinGuild.replace(':id', id);
+      await axiosInstance.post(joinEndpoint);
+    } catch (error) {
+      console.warn("Failed to join guild on server, ignoring error for demo purposes.");
+      // Rollback would happen here in a real app if the call failed
+    }
   };
 
   return (
@@ -44,9 +73,9 @@ const Guilds = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: idx * 0.1 }}
           >
-            <Card hoverEffect className="bg-white/60 overflow-hidden p-0 border-0 flex flex-col h-full group">
+            <Card hoverEffect className="bg-gradient-to-br from-white to-emerald-50/80 overflow-hidden p-0 border border-emerald-100 flex flex-col h-full group shadow-md shadow-emerald-900/5">
               <div className="h-32 overflow-hidden relative">
-                <div className="absolute inset-0 bg-black/20 z-10"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-emerald-900/60 to-transparent z-10"></div>
                 <img 
                   src={guild.image} 
                   alt={guild.name} 

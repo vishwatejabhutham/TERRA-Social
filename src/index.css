@@ -2,11 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  body {
+    @apply transition-colors duration-300 antialiased;
+  }
+  .dark body {
+    @apply bg-gray-900 text-gray-100;
+  }
+}
+
 @layer utilities {
   .glass {
     @apply bg-white/20 backdrop-blur-md border border-white/30 shadow-lg;
   }
-  .glass-dark {
-    @apply bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg;
+  .dark .glass {
+    @apply bg-gray-800/40 backdrop-blur-xl border-gray-700/30 shadow-black/40 !important;
   }
+
+  /* Text Overrides for Dark Mode */
+  .dark .text-ts-forest { @apply text-emerald-400 !important; }
+  .dark .text-gray-800 { @apply text-gray-100 !important; }
+  .dark .text-gray-900 { @apply text-gray-100 !important; }
+  .dark .text-gray-700 { @apply text-gray-200 !important; }
+  .dark .text-gray-600 { @apply text-gray-300 !important; }
+  .dark .text-gray-500 { @apply text-gray-400 !important; }
+
+  /* Background Overrides */
+  .dark .bg-white { @apply bg-gray-800 !important; }
+  .dark .bg-white\/60 { @apply bg-gray-800/60 !important; }
+  .dark .bg-white\/50 { @apply bg-gray-800/50 !important; }
+  .dark .bg-white\/80 { @apply bg-gray-800/80 !important; }
+  .dark .bg-white\/90 { @apply bg-gray-800/90 !important; }
+  .dark .bg-white\/95 { @apply bg-gray-800/95 !important; }
+  .dark .bg-ts-light { @apply bg-gray-900 !important; }
+  .dark .bg-gray-50 { @apply bg-gray-800 !important; }
+  .dark .bg-gray-100 { @apply bg-gray-800 !important; }
+  .dark .bg-gray-200 { @apply bg-gray-700 !important; }
+  .dark .bg-slate-100 { @apply bg-gray-900 !important; }
+
+  /* Gradients */
+  .dark .from-white { @apply from-gray-800 !important; }
+  .dark .from-white\/95 { @apply from-gray-800/95 !important; }
+  .dark .from-teal-50 { @apply from-gray-800 !important; }
+  .dark .from-lime-50 { @apply from-gray-800 !important; }
+  .dark .from-emerald-50 { @apply from-gray-800 !important; }
+  .dark .to-emerald-50\/80 { @apply to-gray-900/80 !important; }
+  .dark .to-emerald-50\/50 { @apply to-gray-900/50 !important; }
+  .dark .to-emerald-100 { @apply to-gray-900 !important; }
+  .dark .to-green-100\/90 { @apply to-gray-900/90 !important; }
+  .dark .to-white { @apply to-gray-900 !important; }
+
+  /* Borders */
+  .dark .border-emerald-100 { @apply border-gray-700 !important; }
+  .dark .border-emerald-100\/50 { @apply border-gray-700/50 !important; }
+  .dark .border-emerald-200\/60 { @apply border-gray-700/60 !important; }
+  .dark .border-gray-200 { @apply border-gray-700 !important; }
+  .dark .border-white\/60 { @apply border-gray-700 !important; }
+  .dark .border-green-200 { @apply border-gray-700 !important; }
+  .dark .border-green-200\/50 { @apply border-gray-700/50 !important; }
 }

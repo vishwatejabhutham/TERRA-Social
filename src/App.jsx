@@ -13,6 +13,7 @@ const Guilds = lazy(() => import('./pages/Guilds'));
 const MapPage = lazy(() => import('./pages/MapPage'));
 const Profile = lazy(() => import('./pages/Profile'));
 const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const AIChatBot = lazy(() => import('./pages/AIChatBot'));
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
             <Route path="/map" element={<MapPage />} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/ai-chat" element={<AIChatBot />} />
           </Route>
 
           {/* Catch-all */}
