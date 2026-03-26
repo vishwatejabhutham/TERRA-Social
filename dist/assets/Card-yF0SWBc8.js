@@ -1,1 +1,0 @@
-import{j as x,m as e}from"./index-DmDzy_M8.js";const t=({children:s,className:o="",hoverEffect:r=!1,...a})=>x.jsx(e.div,{whileHover:r?{y:-5,boxShadow:"0 20px 25px -5px rgb(0 0 0 / 0.1)"}:{},className:`glass rounded-2xl p-6 ${o}`,...a,children:s});export{t as C};

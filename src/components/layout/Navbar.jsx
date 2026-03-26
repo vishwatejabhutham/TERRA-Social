@@ -4,16 +4,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Leaf, Menu, X } from 'lucide-react';
 import Button from '../ui/Button';
 import ThemeToggle from '../ThemeToggle';
+import { useUser } from '../../context/UserContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user } = useUser();
+
+  // Simple heuristic for authenticated vs public: if not at home or login, assume auth
+  const isAuthenticated = !['/', '/login', '/register'].includes(location.pathname);
 
   const navLinks = [
-    { name: 'Explore', path: '/explore' },
+    { name: 'Impact Trade', path: '/impact' },
+    { name: 'Schemes', path: '/schemes' },
     { name: 'Leaderboard', path: '/leaderboard' },
-    { name: 'Guilds', path: '/guilds' },
-    { name: 'AI Assistant', path: '/ai-chat' },
+    { name: 'AI Chat', path: '/ai-chat' },
   ];
 
   return (
@@ -47,14 +52,28 @@ const Navbar = () => {
             </div>
             <div className="flex items-center gap-4 border-l pl-6 border-gray-200 dark:border-gray-700">
               <ThemeToggle />
-              <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-ts-green transition-colors">
-                Log in
-              </Link>
-              <Link to="/register">
-                <Button variant="primary" className="py-2 px-4 shadow-md">
-                  Join Now
-                </Button>
-              </Link>
+              
+              {!isAuthenticated ? (
+                <>
+                  <Link to="/login" className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-ts-green transition-colors">
+                    Log in
+                  </Link>
+                  <Link to="/register">
+                    <Button variant="primary" className="py-2 px-4 shadow-md">
+                      Join Now
+                    </Button>
+                  </Link>
+                </>
+              ) : (
+                <div className="flex items-center gap-3 px-3 py-1.5 bg-ts-light dark:bg-gray-800 rounded-full border border-ts-green/20 shadow-sm cursor-pointer hover:border-ts-green/50 transition-colors">
+                  <span className="text-sm font-bold text-ts-forest dark:text-white hidden sm:block">
+                    {user.firstName}
+                  </span>
+                  <div className="w-8 h-8 rounded-full bg-ts-green flex items-center justify-center text-white font-bold text-xs uppercase shadow-inner">
+                    {user.firstName?.charAt(0) || ''}{user.lastName?.charAt(0) || ''}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -92,18 +111,30 @@ const Navbar = () => {
                 </Link>
               ))}
               <hr className="border-gray-200" />
-              <div className="flex flex-col gap-3">
-                <Link to="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="ghost" className="w-full justify-start py-2">
-                    Log in
-                  </Button>
-                </Link>
-                <Link to="/register" onClick={() => setIsOpen(false)}>
-                  <Button variant="primary" className="w-full py-2">
-                    Join Now
-                  </Button>
-                </Link>
-              </div>
+              {!isAuthenticated ? (
+                <div className="flex flex-col gap-3">
+                  <Link to="/login" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-start py-2">
+                      Log in
+                    </Button>
+                  </Link>
+                  <Link to="/register" onClick={() => setIsOpen(false)}>
+                    <Button variant="primary" className="w-full py-2">
+                      Join Now
+                    </Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="flex items-center gap-3 p-3 bg-ts-light rounded-xl border border-ts-green/20">
+                  <div className="w-10 h-10 rounded-full bg-ts-green flex items-center justify-center text-white font-bold text-sm uppercase">
+                    {user.firstName?.charAt(0) || ''}{user.lastName?.charAt(0) || ''}
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-ts-forest">{user.firstName} {user.lastName}</p>
+                    <p className="text-xs text-gray-500">{user.level}</p>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         )}

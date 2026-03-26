@@ -1,13 +1,17 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, TreePine, Users, Map as MapIcon, UserCircle, Trophy, Bot } from 'lucide-react';
+import { LayoutDashboard, TreePine, Gift, Map as MapIcon, UserCircle, Trophy, Bot, ArrowRightLeft, Globe } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useUser } from '../../context/UserContext';
 
 const Sidebar = () => {
+  const { user } = useUser();
   const menuItems = [
     { name: 'Dashboard', icon: <LayoutDashboard size={20} />, path: '/dashboard' },
     { name: 'Plant a Tree', icon: <TreePine size={20} />, path: '/plant' },
-    { name: 'Guilds', icon: <Users size={20} />, path: '/guilds' },
+    { name: 'Impact Trade', icon: <ArrowRightLeft size={20} />, path: '/impact' },
+    { name: 'Schemes', icon: <Globe size={20} />, path: '/schemes' },
+    { name: 'Rewards', icon: <Gift size={20} />, path: '/rewards' },
     { name: 'Live Map', icon: <MapIcon size={20} />, path: '/map' },
     { name: 'Leaderboard', icon: <Trophy size={20} />, path: '/leaderboard' },
     { name: 'AI Assistant', icon: <Bot size={20} />, path: '/ai-chat' },
@@ -44,12 +48,12 @@ const Sidebar = () => {
       
       <div className="p-6 border-t border-white/20">
         <div className="flex items-center gap-3 px-4 py-2 bg-ts-light rounded-xl border border-ts-green/20 shadow-sm">
-          <div className="w-8 h-8 rounded-full bg-ts-green flex items-center justify-center text-white font-bold text-xs">
-            JD
+          <div className="w-8 h-8 rounded-full bg-ts-green flex items-center justify-center text-white font-bold text-xs uppercase cursor-pointer hover:opacity-80 transition-opacity">
+            {user.firstName?.charAt(0) || ''}{user.lastName?.charAt(0) || ''}
           </div>
           <div>
-            <p className="text-xs font-bold text-ts-forest">John Doe</p>
-            <p className="text-[10px] text-gray-500">Lv. 12 Eco Warrior</p>
+            <p className="text-xs font-bold text-ts-forest">{user.firstName} {user.lastName}</p>
+            <p className="text-[10px] text-gray-500">{user.level}</p>
           </div>
         </div>
       </div>

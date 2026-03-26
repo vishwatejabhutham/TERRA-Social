@@ -5,6 +5,7 @@ import { Trophy, TrendingUp, Medal } from 'lucide-react';
 import Card from '../components/ui/Card';
 import axiosInstance from '../api/axiosInstance';
 import { API } from '../api/endpoints';
+import { useUser } from '../context/UserContext';
 
 const defaultLeaderboardData = [
   { rank: 1, name: 'Elena R.', score: 145200, level: 'Earth Guardian', avatar: 'ER' },
@@ -18,8 +19,38 @@ const defaultLeaderboardData = [
 ];
 
 const Leaderboard = () => {
-  const [leaderboardData, setLeaderboardData] = useState(defaultLeaderboardData);
+  const { user } = useUser();
+  const [leaderboardData, setLeaderboardData] = useState(() => {
+    return defaultLeaderboardData.map(entry => {
+      if (entry.isCurrentUser) {
+        return {
+          ...entry,
+          name: `${user?.firstName || 'John'} ${user?.lastName || 'Doe'}`,
+          avatar: `${user?.firstName?.charAt(0) || 'J'}${user?.lastName?.charAt(0) || 'D'}`.toUpperCase(),
+          level: user?.level || 'Eco Warrior',
+        };
+      }
+      return entry;
+    });
+  });
   const [loading, setLoading] = useState(true);
+
+  // Synchronize default with global user context
+  useEffect(() => {
+    setLeaderboardData((prev) => 
+      prev.map(entry => {
+        if (entry.isCurrentUser) {
+          return {
+            ...entry,
+            name: `${user?.firstName || 'John'} ${user?.lastName || 'Doe'}`,
+            avatar: `${user?.firstName?.charAt(0) || 'J'}${user?.lastName?.charAt(0) || 'D'}`.toUpperCase(),
+            level: user?.level || 'Eco Warrior',
+          };
+        }
+        return entry;
+      })
+    );
+  }, [user]);
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -50,7 +81,7 @@ const Leaderboard = () => {
       {leaderboardData.length >= 3 && (
         <div className="grid grid-cols-3 gap-4 md:gap-8 items-end mb-12 mt-16 px-4">
           {/* Top 3 Podium */}
-          
+
           {/* Spot 2 */}
           <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="flex flex-col items-center">
             <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gray-200 flex items-center justify-center text-xl font-bold shadow-lg border-4 border-[#C0C0C0] mb-4 z-10 relative">
@@ -92,8 +123,8 @@ const Leaderboard = () => {
       {/* List */}
       <Card className="bg-gradient-to-b from-white to-emerald-50/50 border border-emerald-100 shadow-lg p-0 overflow-hidden">
         <ul className="divide-y divide-gray-100">
-          {leaderboardData.slice(3).map((user, idx) => (
-            <motion.li 
+          {(leaderboardData.length >= 3 ? leaderboardData.slice(3) : leaderboardData).map((user, idx) => (
+            <motion.li
               key={user.rank}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}

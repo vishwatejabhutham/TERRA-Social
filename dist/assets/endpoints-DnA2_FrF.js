@@ -1,0 +1,1 @@
+const e={login:"/auth/login",register:"/auth/register",getProfile:"/users/me",plantTree:"/trees",getTrees:"/trees",getGuilds:"/guilds",joinGuild:"/guilds/:id/join",leaderboard:"/leaderboard"};export{e as A};

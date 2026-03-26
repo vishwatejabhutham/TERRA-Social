@@ -4,13 +4,12 @@ import { motion } from 'framer-motion';
 import { TreePine, Wind, Users, Award, ChevronRight, TrendingUp, ArrowUpRight } from 'lucide-react';
 import Card from '../components/ui/Card';
 import axiosInstance from '../api/axiosInstance';
-import { API } from '../api/endpoints';
+import { useUser } from '../context/UserContext';
 
 const defaultStats = [
-  { label: 'Trees Planted', value: 142, icon: <TreePine className="text-ts-green" />, color: 'bg-green-100', trend: '+12% this week' },
-  { label: 'CO₂ Saved (kg)', value: 4520, icon: <Wind className="text-teal-500" />, color: 'bg-teal-100', trend: '+5% today' },
-  { label: 'Guilds Active', value: 3, icon: <Users className="text-blue-500" />, color: 'bg-blue-100', trend: 'Growing' },
-  { label: 'Global Rank', value: 89, prefix: '#', icon: <Award className="text-amber-500" />, color: 'bg-amber-100', trend: '+2 positions' },
+  { label: 'Trees Planted', value: 1, icon: <TreePine className="text-ts-green" />, color: 'bg-green-100', trend: '+12% this week' },
+  { label: 'CO₂ Saved (kg)', value: 2, icon: <Wind className="text-teal-500" />, color: 'bg-teal-100', trend: '+5% today' },
+  { label: 'Global Rank', value: 1, prefix: '#', icon: <Award className="text-amber-500" />, color: 'bg-amber-100', trend: '+2 positions' },
 ];
 
 const defaultHeatmap = Array.from({ length: 84 }, () => Math.floor(Math.random() * 5));
@@ -18,21 +17,14 @@ const defaultHeatmap = Array.from({ length: 84 }, () => Math.floor(Math.random()
 const defaultActivities = [
   { id: 1, desc: 'Planted an Oak tree in Brazil', time: '2 hours ago', points: '+50' },
   { id: 2, desc: 'Completed "Weekend Cyclist" challenge', time: 'Yesterday', points: '+120' },
-  { id: 3, desc: 'Joined the "Ocean Cleanup" Guild', time: '3 days ago', points: '+10' },
+  { id: 3, desc: 'Unlocked the "Ocean Cleanup" Reward', time: '3 days ago', points: '+10' },
 ];
 
-const defaultUser = {
-  name: 'John Doe',
-  avatar: 'JD',
-  level: 'Level 12 Eco Warrior',
-  score: 12450
-};
-
 const Dashboard = () => {
+  const { user } = useUser();
   const [stats, setStats] = useState(defaultStats);
   const [heatmapCells, setHeatmapCells] = useState(defaultHeatmap);
   const [activities, setActivities] = useState(defaultActivities);
-  const [user, setUser] = useState(defaultUser);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -45,18 +37,11 @@ const Dashboard = () => {
             setStats([
               { label: 'Trees Planted', value: data.stats.treesPlanted, icon: <TreePine className="text-ts-green" />, color: 'bg-green-100' },
               { label: 'CO₂ Saved (kg)', value: data.stats.co2Saved, icon: <Wind className="text-teal-500" />, color: 'bg-teal-100' },
-              { label: 'Guilds Active', value: data.stats.guildsActive, icon: <Users className="text-blue-500" />, color: 'bg-blue-100' },
               { label: 'Global Rank', value: data.stats.globalRank, prefix: '#', icon: <Award className="text-amber-500" />, color: 'bg-amber-100' },
             ]);
           }
           if (data.heatmap) setHeatmapCells(data.heatmap);
           if (data.activities) setActivities(data.activities);
-          setUser({
-            name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || defaultUser.name,
-            avatar: data.avatar || defaultUser.avatar,
-            level: data.stats?.level || defaultUser.level,
-            score: data.stats?.totalScore || defaultUser.score
-          });
         }
       } catch (error) {
         console.warn("API call failed, falling back to mock data:", error);
@@ -89,12 +74,12 @@ const Dashboard = () => {
 
           <div className="flex items-center gap-6 mb-6 md:mb-0 relative z-10">
             <div className="w-24 h-24 rounded-full border-4 border-white/30 bg-white/20 backdrop-blur-md flex items-center justify-center text-3xl font-bold shadow-xl shadow-black/10 uppercase ring-4 ring-emerald-400/30 overflow-hidden relative group">
-               {user.avatar}
+               {user.firstName?.charAt(0) || ''}{user.lastName?.charAt(0) || ''}
                <div className="absolute inset-0 bg-white/0 group-hover:bg-white/20 transition-colors cursor-pointer"></div>
             </div>
             <div>
               <p className="text-emerald-100 text-sm font-semibold tracking-wide uppercase mb-1">Welcome back,</p>
-              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{user.name}</h1>
+              <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight">{user.firstName} {user.lastName}</h1>
               <p className="inline-flex items-center gap-2 mt-2 px-3 py-1 bg-white/10 rounded-full border border-white/20 text-sm font-medium backdrop-blur-sm shadow-sm">
                 <Award size={16} className="text-yellow-300" /> {user.level} 
               </p>

@@ -63,9 +63,9 @@ const Profile = () => {
                   <input type="text" defaultValue="Doe" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-ts-green focus:border-ts-green bg-white/50" />
                 </div>
               </div>
-              
+
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-1">Email <Mail className="inline w-4 h-4 text-gray-400 ml-1"/></label>
+                <label className="block text-sm font-semibold text-gray-700 mb-1">Email <Mail className="inline w-4 h-4 text-gray-400 ml-1" /></label>
                 <input type="email" defaultValue="john@example.com" className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-ts-green focus:border-ts-green bg-white/50" />
               </div>
 

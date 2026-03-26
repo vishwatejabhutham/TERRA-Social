@@ -10,7 +10,7 @@ const Landing = () => {
     { icon: <Globe className="w-8 h-8 text-ts-green" />, title: 'Track Impact', desc: 'Log your sustainable activities and see your personal carbon offset.' },
     { icon: <Leaf className="w-8 h-8 text-ts-lime" />, title: 'Plant Real Trees', desc: 'Partner with global NGOs to fund real-world reforestation efforts.' },
     { icon: <Trophy className="w-8 h-8 text-amber-500" />, title: 'Earn Rewards', desc: 'Level up, earn badges, and climb the global eco-leaderboard.' },
-    { icon: <Users className="w-8 h-8 text-teal-500" />, title: 'Join Guilds', desc: 'Team up with friends, family, or colleagues for collective action.' }
+    { icon: <Users className="w-8 h-8 text-teal-500" />, title: 'Join Community', desc: 'Team up with friends, family, or colleagues for collective action.' }
   ];
 
   return (

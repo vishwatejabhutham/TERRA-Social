@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MapPin, Image as ImageIcon, CheckCircle, Leaf } from 'lucide-react';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
+import axios from 'axios';
 import axiosInstance from '../api/axiosInstance';
 import { API } from '../api/endpoints';
 
@@ -82,13 +83,18 @@ const PlantTree = () => {
       console.log("Constructed form data for API.plantTree payload:", { treeType, latitude, longitude, imageFile });
 
       console.log("-> Initiating HTTP POST request to API...");
-      await axiosInstance.post("/trees", formData, {
+
+      const token = localStorage.getItem('ts_token');
+      const baseURL = import.meta.env.VITE_API_BASE_URL || 'https://backend-terrasocial.onrender.com/';
+      
+      // We use raw axios to completely bypass any global 'application/json' headers from axiosInstance
+      // which notoriously destroy the boundary parameter in multipart file uploads.
+      const response = await axios.post(`${baseURL}trees`, formData, {
         headers: {
-          'Content-Type': 'multipart/form-data'
+          'Authorization': token ? `Bearer ${token}` : ''
         }
       });
-      console.log("-> API call SUCCESSFUL returning response!");
-
+      console.log("-> API call SUCCESSFUL returning response!", response.data);
 
       setTreeType('');
       setLatitude('');
@@ -99,8 +105,15 @@ const PlantTree = () => {
       setSuccess(true);
     } catch (error) {
       console.warn("API Error:", error);
-      // Extract exact backend rejection message
-      const backendMessage = error.response?.data?.message || error.message || "Failed to log tree to server.";
+      
+      // Directly parse the exact raw backend error message without interception
+      let backendMessage = "An unexpected error occurred.";
+      if (error.response && error.response.data && error.response.data.message) {
+         backendMessage = error.response.data.message;
+      } else if (error.message) {
+         backendMessage = error.message;
+      }
+      
       setErrorMsg(backendMessage);
     } finally {
       setLoading(false);
@@ -146,13 +159,13 @@ const PlantTree = () => {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2 mt-4"><Leaf className="inline w-4 h-4 mr-2 text-ts-green" />Tree Type / Species</label>
-                    
+
                     {errorMsg && (
                       <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 text-sm font-semibold rounded-lg">
                         {errorMsg}
                       </div>
                     )}
-                    
+
                     <select value={treeType} onChange={(e) => setTreeType(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-ts-green focus:border-ts-green bg-white/50">
                       <option value="">Select a species...</option>
                       <option value="oak">Oak Tree</option>
@@ -163,14 +176,45 @@ const PlantTree = () => {
                     </select>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2"><MapPin className="inline w-4 h-4 mr-2 text-ts-green" />Latitude</label>
-                      <input type="number" step="any" value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder="Wait for GPS..." className={`w-full px-4 py-3 border rounded-xl focus:ring-ts-green focus:border-ts-green transition-colors ${locating ? 'bg-emerald-50 border-emerald-300 animate-pulse text-emerald-700' : 'border-gray-200 bg-white/50'}`} />
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-sm font-semibold text-gray-700"><MapPin className="inline w-4 h-4 mr-2 text-ts-green" />Coordinates</label>
+                      <button 
+                        type="button" 
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (navigator.geolocation) {
+                            setLocating(true);
+                            navigator.geolocation.getCurrentPosition(
+                              (position) => {
+                                setLatitude(position.coords.latitude.toFixed(6));
+                                setLongitude(position.coords.longitude.toFixed(6));
+                                setLocating(false);
+                              },
+                              (error) => {
+                                console.warn("Geolocation API failed:", error);
+                                alert("Could not fetch location. Please ensure location services are enabled for your browser.");
+                                setLocating(false);
+                              },
+                              { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                            );
+                          } else {
+                            alert("Geolocation is not supported by your browser.");
+                          }
+                        }}
+                        disabled={locating}
+                        className="text-xs font-bold text-ts-green bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg flex items-center transition-colors disabled:opacity-50"
+                      >
+                        {locating ? "Locating..." : "📍 Get My Location"}
+                      </button>
                     </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2"><MapPin className="inline w-4 h-4 mr-2 text-ts-green" />Longitude</label>
-                      <input type="number" step="any" value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder="Wait for GPS..." className={`w-full px-4 py-3 border rounded-xl focus:ring-ts-green focus:border-ts-green transition-colors ${locating ? 'bg-emerald-50 border-emerald-300 animate-pulse text-emerald-700' : 'border-gray-200 bg-white/50'}`} />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <input type="number" step="any" value={latitude} onChange={(e) => setLatitude(e.target.value)} placeholder="Latitude" className={`w-full px-4 py-3 border rounded-xl focus:ring-ts-green focus:border-ts-green transition-colors ${locating ? 'bg-emerald-50 border-emerald-300 animate-pulse text-emerald-700' : 'border-gray-200 bg-white/50'}`} />
+                      </div>
+                      <div>
+                        <input type="number" step="any" value={longitude} onChange={(e) => setLongitude(e.target.value)} placeholder="Longitude" className={`w-full px-4 py-3 border rounded-xl focus:ring-ts-green focus:border-ts-green transition-colors ${locating ? 'bg-emerald-50 border-emerald-300 animate-pulse text-emerald-700' : 'border-gray-200 bg-white/50'}`} />
+                      </div>
                     </div>
                   </div>
 
